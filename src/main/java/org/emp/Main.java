@@ -9,11 +9,16 @@ public class Main {
         ApplicationContext context =  new ClassPathXmlApplicationContext("spring-bean.xml");
         System.out.println("Spring container is ready");
         EmployeeDao dao=(EmployeeDao)context.getBean("empDao");
-        List<Employee> emps=dao.getEmployees();
-        for(int i=0;i<emps.size();i++){
-            System.out.println(emps.get(i));
+
+        Employee newEmp = new Employee(3,"Raj",10000);
+        dao.saveEmployee(newEmp);
+
+        Employee newEmp2= new Employee(4,"Lo",10000);
+        dao.saveEmployee(newEmp2);
+        List<Employee> empList = dao.getEmployee();
+
+        for (Employee emp:empList) {
+            System.out.println(emp.getName());
         }
-
-
     }
 }

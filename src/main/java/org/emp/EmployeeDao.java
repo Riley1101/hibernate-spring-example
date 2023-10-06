@@ -2,41 +2,39 @@ package org.emp;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
-import org.springframework.transaction.annotation.Transactional;
 
 public class EmployeeDao
 {
-    private HibernateTemplate session;
-
-    public void setTemplate(HibernateTemplate template) {
-        this.session = template;
+    public SessionFactory getSessionFactory() {
+        return sessionFactory;
     }
 
-    @Transactional(readOnly = false)
+    public void setSessionFactory(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
+
+    private SessionFactory sessionFactory;
+
+
     public void saveEmployee(Employee emp){
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
         session.save(emp);
+        session.getTransaction().commit();
+        session.close();
     }
-
-    @Transactional(readOnly = false)
-    public void updateEmployee(Employee emp){
-        session.update(emp);
-    }
-
-    @Transactional(readOnly = false)
-    public void deleteEmployee(Employee e){
-        session.delete(e);
-    }
-
-    public Employee getById(int id){
-        Employee emp = (Employee)session.get(Employee.class,id);
-        return emp;
-    }
-
-    public List<Employee> getEmployees(){
-        List<Employee> list=new ArrayList<Employee>();
-        list = session.loadAll(Employee.class);
-        return list;
+    public  List<Employee> getEmployee(){
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        List<Employee> empList = session.createQuery("from Employee").list();
+        session.getTransaction().commit();
+        session.close();
+        return empList;
     }
 }
 
